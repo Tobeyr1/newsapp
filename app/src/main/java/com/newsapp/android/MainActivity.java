@@ -1,15 +1,16 @@
 package com.newsapp.android;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import com.newsapp.android.exitsettings.BasicActivity;
+
 import org.litepal.LitePal;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BasicActivity {
     private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

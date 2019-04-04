@@ -1,9 +1,10 @@
 package com.newsapp.android;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Login extends AppCompatActivity {
+import com.newsapp.android.exitsettings.BasicActivity;
+
+public class Login extends BasicActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
