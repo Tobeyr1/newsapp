@@ -1,0 +1,16 @@
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_call" android:title="Call" android:icon="@drawable/nav_call"
+            tools:ignore="HardcodedText" />
+        <item android:id="@+id/nav_friends" android:title="Friends" android:icon="@drawable/nav_friends"
+            tools:ignore="HardcodedText" />
+        <item android:id="@+id/nav_location" android:title="Location" android:icon="@drawable/nav_location"
+            tools:ignore="HardcodedText" />
+        <item android:id="@+id/nav_mail" android:title="Mail" android:icon="@drawable/na_mail"
+            tools:ignore="HardcodedText" />
+        <item android:id="@+id/nav_settings" android:title="Settings" android:icon="@drawable/nav_settings"
+            tools:ignore="HardcodedText" />
+    </group>
+</menu>
