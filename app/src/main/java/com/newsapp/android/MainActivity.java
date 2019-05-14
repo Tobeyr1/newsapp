@@ -1,6 +1,7 @@
 package com.newsapp.android;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
@@ -51,7 +53,6 @@ public class MainActivity extends BasicActivity {
     private ViewPager viewPager;
     private List<String> list;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
     private TabPageIndicator mIndicator;
     private ViewPager mViewPager;
     private FragmentPagerAdapter mAdapter;
@@ -97,6 +98,9 @@ public class MainActivity extends BasicActivity {
                         break;
                     case R.id.nav_view:
                         Toast.makeText(MainActivity.this, "manage", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_exit:
+                        Toast.makeText(MainActivity.this, "切换账号，要做改动的地方", Toast.LENGTH_LONG).show();
                         break;
                 }
                 return false;
@@ -200,30 +204,6 @@ public class MainActivity extends BasicActivity {
 
     }
 
-
-
-    private void refreshNews() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataList.clear();
-                        adapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-            }
-        }).start();
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar,menu);
@@ -233,18 +213,33 @@ public class MainActivity extends BasicActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.userinfom:
+            case R.id.userFeedback:
 
                 Toast.makeText(this,"ni click 用户设置",Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.usersettings:
-                Toast.makeText(this,"退出",Toast.LENGTH_SHORT).show();
-                ActivityCollector.finishAll();
+            case R.id.userExit:
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("Warning");
+                dialog.setMessage("是否推出程序？");
+                dialog.setCancelable(false);
+                dialog.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCollector.finishAll();
+                    }
+                });
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dialog.show();
                 break;
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             default:
+                break;
         }
         return true;
     }

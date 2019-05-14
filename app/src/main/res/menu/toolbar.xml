@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/userinfom" android:title="用户信息设置"  android:icon="@drawable/ic_share_24dp" android:orderInCategory="110"/>
-    <item android:id="@+id/usersettings" android:title="个人" android:orderInCategory="100"/>
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item android:id="@+id/userFeedback" android:title="用户反馈"  android:icon="@drawable/ic_textsms"
+        app:showAsAction="collapseActionView"  tools:ignore="AppCompatRespource,HardcodedText" android:orderInCategory="110"/>
+    <item android:id="@+id/userExit" android:title="退出" android:icon="@drawable/ic_power_settings"
+        app:showAsAction="collapseActionView"  tools:ignore="AppCompatRespource,HardcodedText" android:orderInCategory="100"/>
 </menu>

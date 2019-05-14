@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,12 +35,17 @@ import java.util.List;
 public class NewsFragment extends Fragment {
     private List<NewsBean.ResultBean.DataBean> list;
     private ListView listView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private FloatingActionButton fab;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_item,container,false);
         listView = (ListView) view.findViewById(R.id.listView);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        view.findViewById(R.id.fab).bringToFront();
         return view;
     }
 
@@ -46,6 +54,26 @@ public class NewsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         Bundle bundle = getArguments();
         String data = bundle.getString("name","top");
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*计划进行置顶操作*/
+                listView.smoothScrollToPosition(0);
+            }
+        });
+        //下拉刷新
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+               new Handler().postDelayed(new Runnable() {
+                   @Override
+                   public void run() {
+                       swipeRefreshLayout.setRefreshing(false);
+                   }
+               },3000);
+            }
+        });
 
         //异步加载数据
         getDataFromNet(data);
@@ -60,6 +88,7 @@ public class NewsFragment extends Fragment {
             }
         });
     }
+
     private void getDataFromNet(final String data){
        @SuppressLint("StaticFieldLeak") AsyncTask<Void,Void,String> task = new AsyncTask<Void, Void, String>() {
            @Override

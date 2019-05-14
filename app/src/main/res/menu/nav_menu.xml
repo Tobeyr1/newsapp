@@ -12,5 +12,7 @@
             tools:ignore="HardcodedText" />
         <item android:id="@+id/nav_settings" android:title="Settings" android:icon="@drawable/nav_settings"
             tools:ignore="HardcodedText" />
+        <item android:id="@+id/nav_exit" android:title="切换账号" android:icon="@drawable/nav_switch" android:checkable="true"
+            tools:ignore="HardcodedText" />
     </group>
 </menu>

@@ -1,12 +1,13 @@
 package com.newsapp.android;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-public class WebActivity extends AppCompatActivity {
+import com.newsapp.android.exitsettings.BasicActivity;
+
+public class WebActivity extends BasicActivity {
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
