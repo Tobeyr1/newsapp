@@ -26,11 +26,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.newsapp.android.TabAdapter.NewsFragment;
 import com.newsapp.android.TitleUtils.ChannelItem;
+import com.newsapp.android.UserMode.LoginActivity;
+import com.newsapp.android.UserMode.LoginOutActivity;
 import com.newsapp.android.ViewPageTitle.TabAdapter;
 import com.newsapp.android.exitsettings.ActivityCollector;
 import com.newsapp.android.exitsettings.BasicActivity;
@@ -52,7 +55,7 @@ public class MainActivity extends BasicActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private List<String> list;
-
+    private TextView tvhuoqu;
     private TabPageIndicator mIndicator;
     private ViewPager mViewPager;
     private FragmentPagerAdapter mAdapter;
@@ -67,6 +70,7 @@ public class MainActivity extends BasicActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBar actionBar = getSupportActionBar();
        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
@@ -90,17 +94,20 @@ public class MainActivity extends BasicActivity {
                     case R.id.nav_location:
                         Toast.makeText(MainActivity.this, "manage", Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.nav_mail:
-                        Toast.makeText(MainActivity.this, "manage", Toast.LENGTH_SHORT).show();
+                    case R.id.nav_favorite:
+                        Toast.makeText(MainActivity.this, "收藏，在用户登陆后关联实现", Toast.LENGTH_LONG).show();
                         break;
                     case R.id.nav_settings:
-                        Toast.makeText(MainActivity.this, "manage", Toast.LENGTH_SHORT).show();
+                        Intent exitIntent = new Intent(MainActivity.this,LoginOutActivity.class);
+                        startActivity(exitIntent);
+                        Toast.makeText(MainActivity.this,"需要做出登出功能，可扩展夜间模式，离线模式等,检查更新",Toast.LENGTH_LONG).show();
                         break;
                     case R.id.nav_view:
                         Toast.makeText(MainActivity.this, "manage", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_exit:
-                        Toast.makeText(MainActivity.this, "切换账号，要做改动的地方", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                        startActivityForResult(intent,1);
                         break;
                 }
                 return false;
@@ -202,6 +209,19 @@ public class MainActivity extends BasicActivity {
 
 
 
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode){
+            case 1:
+                if (resultCode == RESULT_OK){
+                    String returnedData = data.getStringExtra("data_return");
+                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                    tvhuoqu.setText(returnedData);
+                }
+                break;
+            default:
+        }
     }
 
     @Override

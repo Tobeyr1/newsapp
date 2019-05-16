@@ -8,9 +8,9 @@
             tools:ignore="HardcodedText" />
         <item android:id="@+id/nav_location" android:title="Location" android:icon="@drawable/nav_location"
             tools:ignore="HardcodedText" />
-        <item android:id="@+id/nav_mail" android:title="Mail" android:icon="@drawable/na_mail"
+        <item android:id="@+id/nav_favorite" android:title="收藏" android:icon="@drawable/na_mail"
             tools:ignore="HardcodedText" />
-        <item android:id="@+id/nav_settings" android:title="Settings" android:icon="@drawable/nav_settings"
+        <item android:id="@+id/nav_settings" android:title="设置" android:icon="@drawable/nav_settings"
             tools:ignore="HardcodedText" />
         <item android:id="@+id/nav_exit" android:title="切换账号" android:icon="@drawable/nav_switch" android:checkable="true"
             tools:ignore="HardcodedText" />

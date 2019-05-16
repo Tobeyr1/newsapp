@@ -10,4 +10,6 @@
     <color name="colorLineDefault">#FFAAAAAA</color>
     <color name="colorMain">#FF0F</color>
     <color name="colorblank">#000</color>
+    <color name="colorpink">#FF7F50</color>
+    <color name="colorhuise">#DCDCDC</color>
 </resources>
