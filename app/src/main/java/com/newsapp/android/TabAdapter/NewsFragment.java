@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.newsapp.android.R;
+import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.WebActivity;
 import com.newsapp.android.gson.NewsBean;
 
@@ -30,6 +31,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 public class NewsFragment extends Fragment {
@@ -82,6 +86,42 @@ public class NewsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //获取点击条目的路径，传值显示webview页面
                 String url = list.get(position).getUrl();
+                final   NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) list.get(position);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Connection conn = null;
+                        conn = (Connection) DBOpenHelper.getConn();
+                        System.out.print("******************");
+                        System.out.print(conn);
+                        System.out.print("********************");
+                        String sql = "insert into news_info(uniquekey,title,date,category,author_name,url,thumbnail_pic_s,thumbnail_pic_s02,thumbnail_pic_s03) values(?,?,?,?,?,?,?,?,?)";
+                        int i = 0;
+
+                        PreparedStatement pstmt;
+                        try {
+                            pstmt = (PreparedStatement) conn.prepareStatement(sql);
+                            pstmt.setString(1,dataBean.getUniquekey());
+                            pstmt.setString(2,dataBean.getTitle());
+                            pstmt.setString(3,dataBean.getDate());
+                            pstmt.setString(4,dataBean.getCategory());
+                            pstmt.setString(5,dataBean.getAuthor_name());
+                            pstmt.setString(6,dataBean.getUrl());
+                            pstmt.setString(7,dataBean.getThumbnail_pic_s());
+                            pstmt.setString(8,dataBean.getThumbnail_pic_s02());
+                            pstmt.setString(9,dataBean.getThumbnail_pic_s03());
+                            i = pstmt.executeUpdate();
+
+                            pstmt.close();
+                            conn.close();
+
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
                 Intent intent = new Intent(getActivity(),WebActivity.class);
                 intent.putExtra("url",url);
                 startActivity(intent);
