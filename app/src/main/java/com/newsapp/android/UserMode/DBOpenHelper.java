@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class DBOpenHelper {
     private static String driver = "com.mysql.jdbc.Driver";//MySQL 驱动
-    private static String url = "jdbc:mysql://192.168.1.110:3306/user?characterEncoding=utf-8";//MYSQL数据库连接Url
+    private static String url = "jdbc:mysql://192.168.1.112:3306/user?characterEncoding=utf-8";//MYSQL数据库连接Url
     private static String user = "liu";//用户名
     private static String password = "031122";//密码
     /**

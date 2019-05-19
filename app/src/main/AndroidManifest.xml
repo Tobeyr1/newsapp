@@ -65,7 +65,8 @@
         <activity android:name=".BrowseNewsActivity" />
         <activity android:name=".WebActivity" />
         <activity android:name=".UserMode.LoginActivity" />
-        <activity android:name=".UserMode.LoginOutActivity"></activity>
+        <activity android:name=".UserMode.LoginOutActivity" />
+        <activity android:name=".UserMode.UserFavoriteActivity"></activity>
     </application>
 
 </manifest>

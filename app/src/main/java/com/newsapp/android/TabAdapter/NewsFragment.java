@@ -86,6 +86,7 @@ public class NewsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //获取点击条目的路径，传值显示webview页面
                 String url = list.get(position).getUrl();
+                String uniquekey = list.get(position).getUniquekey();
                 final   NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) list.get(position);
 
                 new Thread(new Runnable() {
@@ -124,6 +125,7 @@ public class NewsFragment extends Fragment {
                 }).start();
                 Intent intent = new Intent(getActivity(),WebActivity.class);
                 intent.putExtra("url",url);
+                intent.putExtra("uniquekey",uniquekey);
                 startActivity(intent);
             }
         });

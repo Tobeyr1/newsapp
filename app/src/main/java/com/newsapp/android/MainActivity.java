@@ -34,6 +34,7 @@ import com.newsapp.android.TabAdapter.NewsFragment;
 import com.newsapp.android.TitleUtils.ChannelItem;
 import com.newsapp.android.UserMode.LoginActivity;
 import com.newsapp.android.UserMode.LoginOutActivity;
+import com.newsapp.android.UserMode.UserFavoriteActivity;
 import com.newsapp.android.ViewPageTitle.TabAdapter;
 import com.newsapp.android.exitsettings.ActivityCollector;
 import com.newsapp.android.exitsettings.BasicActivity;
@@ -64,6 +65,8 @@ public class MainActivity extends BasicActivity {
     private NewsAdapter adapter;
     private List<Data> dataList;
     private List<Fragment> mFragmentList;
+    String phonenumber;
+    private NavigationView navView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,11 +76,58 @@ public class MainActivity extends BasicActivity {
         tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBar actionBar = getSupportActionBar();
-       NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        navView = (NavigationView) findViewById(R.id.nav_view);
         if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
         }
+
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+
+        list = new ArrayList<>();
+        list.add("头条");
+        list.add("社会");
+        list.add("国内");
+        list.add("国际");
+        list.add("娱乐");
+        list.add("体育");
+        list.add("军事");
+        list.add("科技");
+        list.add("财经");
+        list.add("财经");
+
+
+      //下拉刷新
+       /* swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+       swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+           @Override
+           public void onRefresh() {
+                refreshNews();
+            }
+       });*/
+
+
+      /*  lvNews = (ListView) findViewById(R.id.lvNews);
+        dataList = new ArrayList<Data>();
+        adapter = new NewsAdapter(this, dataList);
+        lvNews.setAdapter(adapter);
+        lvNews.setOnItemClickListener(this);
+        sendRequestWithOKHttp();*/
+
+      /*  mIndicator = (TabPageIndicator) findViewById(R.id.id_indicator);
+        mViewPager = (ViewPager) findViewById(R.id.id_pager);
+        mAdapter = new TabAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mAdapter);
+        mIndicator.setViewPager(mViewPager, 0);*/
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
         navView.setCheckedItem(R.id.nav_call);
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -95,7 +145,13 @@ public class MainActivity extends BasicActivity {
                         Toast.makeText(MainActivity.this, "manage", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_favorite:
-                        Toast.makeText(MainActivity.this, "收藏，在用户登陆后关联实现", Toast.LENGTH_LONG).show();
+                        if (phonenumber != null){
+                            Intent userFavIntent = new Intent(MainActivity.this,UserFavoriteActivity.class);
+                            startActivity(userFavIntent);
+                        } else {
+                            Intent exitIntent = new Intent(MainActivity.this,LoginActivity.class);
+                            startActivityForResult(exitIntent,2);
+                        }
                         break;
                     case R.id.nav_settings:
                         Intent exitIntent = new Intent(MainActivity.this,LoginOutActivity.class);
@@ -116,23 +172,6 @@ public class MainActivity extends BasicActivity {
                /* return true;
             }*/
         });
-
-
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
-
-        list = new ArrayList<>();
-        list.add("头条");
-        list.add("社会");
-        list.add("国内");
-        list.add("国际");
-        list.add("娱乐");
-        list.add("体育");
-        list.add("军事");
-        list.add("科技");
-        list.add("财经");
-        list.add("财经");
-
         //viewPager+Fragment数据列表适配器
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             //得到当前页的标题，也就是设置当前页面显示的标题是tabLayout对应标题
@@ -181,35 +220,9 @@ public class MainActivity extends BasicActivity {
         });
         //TabLayout要与ViewPAger关联显示
         tabLayout.setupWithViewPager(viewPager);
-
-
-      //下拉刷新
-       /* swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-       swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-           @Override
-           public void onRefresh() {
-                refreshNews();
-            }
-       });*/
-
-
-      /*  lvNews = (ListView) findViewById(R.id.lvNews);
-        dataList = new ArrayList<Data>();
-        adapter = new NewsAdapter(this, dataList);
-        lvNews.setAdapter(adapter);
-        lvNews.setOnItemClickListener(this);
-        sendRequestWithOKHttp();*/
-
-      /*  mIndicator = (TabPageIndicator) findViewById(R.id.id_indicator);
-        mViewPager = (ViewPager) findViewById(R.id.id_pager);
-        mAdapter = new TabAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mAdapter);
-        mIndicator.setViewPager(mViewPager, 0);*/
-
-
-
+        super.onStart();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode){
@@ -218,6 +231,15 @@ public class MainActivity extends BasicActivity {
                     String returnedData = data.getStringExtra("data_return");
                     tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
                     tvhuoqu.setText(returnedData);
+                    phonenumber = returnedData;
+                }
+                break;
+            case 2:
+                if(resultCode == RESULT_OK){
+                    String returnedData = data.getStringExtra("data_return");
+                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                    tvhuoqu.setText(returnedData);
+                    phonenumber = returnedData;
                 }
                 break;
             default:
