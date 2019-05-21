@@ -223,6 +223,10 @@ public class MainActivity extends BasicActivity {
         super.onStart();
     }
 
+    public String getPhonenumber(){
+        return phonenumber;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode){
@@ -243,6 +247,16 @@ public class MainActivity extends BasicActivity {
                 }
                 break;
             default:
+        }
+        switch (resultCode){
+            case RESULT_OK:
+                String returnedData = data.getStringExtra("data_return");
+                System.out.println("fanhuizhi**********###"+returnedData);
+                tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                tvhuoqu.setText(returnedData);
+
+                phonenumber = returnedData;
+                break;
         }
     }
 

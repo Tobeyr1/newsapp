@@ -3,6 +3,7 @@ package com.newsapp.android;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -13,6 +14,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.newsapp.android.UserMode.DBOpenHelper;
+import com.newsapp.android.UserMode.LoginActivity;
 import com.newsapp.android.exitsettings.BasicActivity;
 
 import java.io.BufferedReader;
@@ -26,12 +28,15 @@ import java.sql.SQLException;
 
 public class WebActivity extends BasicActivity {
     String user_phone;
+    String user_phonenumber;
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        user_phonenumber = getIntent().getStringExtra("usernumbbbb");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
         WebView webView = (WebView) findViewById(R.id.webView);
+        findViewById(R.id.toolbar_webcomment).bringToFront();
         //获取传递的路径
         String url = getIntent().getStringExtra("url");
         String inputText = load();
@@ -57,36 +62,41 @@ public class WebActivity extends BasicActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.news_share:
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_SEND);
+                        Intent intent = new Intent(Intent.ACTION_SEND);
                         intent.setType("text/plain");
                         intent.putExtra(Intent.EXTRA_SUBJECT,"分享");
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(Intent.createChooser(intent,getTitle()));
                         break;
                     case R.id.news_collect:
-                        Toast.makeText(WebActivity.this,"收藏成功",Toast.LENGTH_SHORT).show();
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Connection conn = null;
-                                conn = (Connection) DBOpenHelper.getConn();
-                                String uniquekey = getIntent().getStringExtra("uniquekey");
-                                String sql = "insert into user_collect(user_phone,news_id) values(?,?) ";
-                                int i = 0;
-                                PreparedStatement pstmt;
-                                try {
-                                    pstmt = (PreparedStatement) conn.prepareStatement(sql);
-                                    pstmt.setString(1,user_phone);
-                                    pstmt.setString(2,uniquekey);
-                                    i = pstmt.executeUpdate();
-                                    pstmt.close();
-                                    conn.close();
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
+                        if (user_phonenumber != null){
+                            System.out.println("shifouzhendeshihuoqudaod!@###$#"+user_phonenumber);
+                            Toast.makeText(WebActivity.this,"收藏成功",Toast.LENGTH_SHORT).show();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Connection conn = null;
+                                    conn = (Connection) DBOpenHelper.getConn();
+                                    String uniquekey = getIntent().getStringExtra("uniquekey");
+                                    String sql = "insert into user_collect(user_phone,news_id) values(?,?) ";
+                                    int i = 0;
+                                    PreparedStatement pstmt;
+                                    try {
+                                        pstmt = (PreparedStatement) conn.prepareStatement(sql);
+                                        pstmt.setString(1,user_phonenumber);
+                                        pstmt.setString(2,uniquekey);
+                                        i = pstmt.executeUpdate();
+                                        pstmt.close();
+                                        conn.close();
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        }).start();
+                            }).start();
+                        } else {
+                            Intent exitIntent = new Intent(WebActivity.this,LoginActivity.class);
+                            startActivityForResult(exitIntent,3);
+                        }
                         break;
                 }
                 return true;
@@ -97,6 +107,11 @@ public class WebActivity extends BasicActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_chevron_left);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     public String load() {
@@ -125,6 +140,38 @@ public class WebActivity extends BasicActivity {
         }
         return content.toString();
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode){
+            case 3:
+                if (resultCode == RESULT_OK){
+                    String returnedData = data.getStringExtra("data_return");
+                    user_phonenumber =returnedData;
+                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
+                    System.out.println("zhucefanhuizhi@@@@@@@@#####"+user_phonenumber);
+                    if (returnedData != null){
+
+                    }else {
+                        Toast.makeText(this,"登陆失败",Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                break;
+            default:
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("data_return",user_phonenumber);
+        System.out.println("*!!!!!!!!!!!");
+        System.out.println("*!!!!!!!!!!!"+user_phonenumber);
+        setResult(RESULT_OK,returnIntent);
+        Bundle bundle = new Bundle();
+        returnIntent.putExtras(bundle);
+        finish();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -137,6 +184,13 @@ public class WebActivity extends BasicActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("data_return",user_phonenumber);
+                System.out.println("&&&&&&&&&&");
+                System.out.println("&&&&&&&&&&"+user_phonenumber);
+                setResult(RESULT_OK,returnIntent);
+                Bundle bundle = new Bundle();
+                returnIntent.putExtras(bundle);
                 WebActivity.this.finish();
                 break;
             case R.id.news_search:

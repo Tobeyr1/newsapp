@@ -1,6 +1,7 @@
 package com.newsapp.android.TabAdapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.ListView;
 
 
 import com.google.gson.Gson;
+import com.newsapp.android.MainActivity;
 import com.newsapp.android.R;
 import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.WebActivity;
@@ -41,6 +43,8 @@ public class NewsFragment extends Fragment {
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fab;
+    private static final int UPNEWS_INSERT = 0;
+    String usernumbbbb;
 
     @Nullable
     @Override
@@ -56,6 +60,8 @@ public class NewsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //获取宿本Activity的number值
+        onAttach(getActivity());
         Bundle bundle = getArguments();
         String data = bundle.getString("name","top");
         fab.setOnClickListener(new View.OnClickListener() {
@@ -126,9 +132,16 @@ public class NewsFragment extends Fragment {
                 Intent intent = new Intent(getActivity(),WebActivity.class);
                 intent.putExtra("url",url);
                 intent.putExtra("uniquekey",uniquekey);
+                intent.putExtra("usernumbbbb",usernumbbbb);
                 startActivity(intent);
             }
         });
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        usernumbbbb = ((MainActivity) activity).getPhonenumber();//通过强转成宿主activity，就可以获取到传递过来的数据
+        System.out.println("fanhuishide1shuju++**&^%%$$$##"+usernumbbbb);
     }
 
     private void getDataFromNet(final String data){
