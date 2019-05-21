@@ -17,6 +17,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
@@ -42,7 +43,11 @@ import com.newsapp.android.gson.Data;
 import com.newsapp.android.gson.News;
 import com.viewpagerindicator.TabPageIndicator;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +71,7 @@ public class MainActivity extends BasicActivity {
     private List<Data> dataList;
     private List<Fragment> mFragmentList;
     String phonenumber;
+    String user_phone_number;
     private NavigationView navView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,9 +229,6 @@ public class MainActivity extends BasicActivity {
         super.onStart();
     }
 
-    public String getPhonenumber(){
-        return phonenumber;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -258,6 +261,37 @@ public class MainActivity extends BasicActivity {
                 phonenumber = returnedData;
                 break;
         }
+    }
+
+    public String load() {
+        FileInputStream in = null;
+        BufferedReader reader = null;
+        StringBuilder content = new StringBuilder();
+        try {
+            in = openFileInput("data");
+            System.out.println("是否读到文件内容"+in);
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null){
+                content.append(line);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (reader != null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return content.toString();
+    }
+    public String getPhonenumber(){
+        return phonenumber;
     }
 
     @Override
@@ -293,6 +327,13 @@ public class MainActivity extends BasicActivity {
                 break;
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                String inputText = load();
+                if (!TextUtils.isEmpty(inputText)){
+                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                    String  user_phone_number = inputText;
+                    phonenumber = inputText;
+                    tvhuoqu.setText(user_phone_number);
+                }
                 break;
             default:
                 break;
