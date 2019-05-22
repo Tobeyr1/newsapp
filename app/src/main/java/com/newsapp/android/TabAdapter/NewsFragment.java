@@ -63,7 +63,7 @@ public class NewsFragment extends Fragment {
         //获取宿本Activity的number值
         onAttach(getActivity());
         Bundle bundle = getArguments();
-        String data = bundle.getString("name","top");
+        final String data = bundle.getString("name","top");
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

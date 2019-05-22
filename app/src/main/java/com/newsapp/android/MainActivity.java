@@ -1,6 +1,5 @@
 package com.newsapp.android;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,36 +12,24 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 import com.newsapp.android.TabAdapter.NewsFragment;
-import com.newsapp.android.TitleUtils.ChannelItem;
 import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.UserMode.LoginActivity;
 import com.newsapp.android.UserMode.LoginOutActivity;
 import com.newsapp.android.UserMode.UserFavoriteActivity;
-import com.newsapp.android.ViewPageTitle.TabAdapter;
 import com.newsapp.android.exitsettings.ActivityCollector;
 import com.newsapp.android.exitsettings.BasicActivity;
 import com.newsapp.android.gson.Data;
-import com.newsapp.android.gson.News;
 import com.viewpagerindicator.TabPageIndicator;
 
 import java.io.BufferedReader;
@@ -55,12 +42,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
-import static com.newsapp.android.ViewPageTitle.TabAdapter.TITLES;
 
 public class MainActivity extends BasicActivity {
     private TabLayout tabLayout;
@@ -78,6 +63,7 @@ public class MainActivity extends BasicActivity {
     String phonenumber;
     String user_phone_number;
     private NavigationView navView;
+    private static boolean mBackKeyPressed = false;//记录是否有首次按键
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,13 +72,7 @@ public class MainActivity extends BasicActivity {
         setSupportActionBar(toolbar);
         tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBar actionBar = getSupportActionBar();
         navView = (NavigationView) findViewById(R.id.nav_view);
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
-        }
-
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
 
@@ -106,19 +86,6 @@ public class MainActivity extends BasicActivity {
         list.add("军事");
         list.add("科技");
         list.add("财经");
-        list.add("财经");
-
-
-      //下拉刷新
-       /* swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-       swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-           @Override
-           public void onRefresh() {
-                refreshNews();
-            }
-       });*/
-
 
       /*  lvNews = (ListView) findViewById(R.id.lvNews);
         dataList = new ArrayList<Data>();
@@ -139,6 +106,11 @@ public class MainActivity extends BasicActivity {
 
     @Override
     protected void onStart() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
+        }
         navView.setCheckedItem(R.id.nav_call);
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -158,6 +130,7 @@ public class MainActivity extends BasicActivity {
                     case R.id.nav_favorite:
                         if (phonenumber != null){
                             Intent userFavIntent = new Intent(MainActivity.this,UserFavoriteActivity.class);
+                            userFavIntent.putExtra("test_user",phonenumber);
                             startActivity(userFavIntent);
                         } else {
                             Intent exitIntent = new Intent(MainActivity.this,LoginActivity.class);
@@ -183,6 +156,7 @@ public class MainActivity extends BasicActivity {
                /* return true;
             }*/
         });
+        super.onStart();
         //viewPager+Fragment数据列表适配器
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             //得到当前页的标题，也就是设置当前页面显示的标题是tabLayout对应标题
@@ -199,6 +173,7 @@ public class MainActivity extends BasicActivity {
 
                 //判断所选的标题，进行传值显示
                 Bundle bundle = new Bundle();
+                bundle.putString("phone",phonenumber);
                 if (list.get(position).equals("头条")){
                     bundle.putString("name","top");
                 }else if (list.get(position).equals("社会")){
@@ -231,43 +206,8 @@ public class MainActivity extends BasicActivity {
         });
         //TabLayout要与ViewPAger关联显示
         tabLayout.setupWithViewPager(viewPager);
-        super.onStart();
+
     }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        switch (requestCode){
-            case 1:
-                if (resultCode == RESULT_OK){
-                    String returnedData = data.getStringExtra("data_return");
-                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
-                    tvhuoqu.setText(returnedData);
-                    phonenumber = returnedData;
-                }
-                break;
-            case 2:
-                if(resultCode == RESULT_OK){
-                    String returnedData = data.getStringExtra("data_return");
-                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
-                    tvhuoqu.setText(returnedData);
-                    phonenumber = returnedData;
-                }
-                break;
-            default:
-        }
-        switch (resultCode){
-            case RESULT_OK:
-                String returnedData = data.getStringExtra("data_return");
-                System.out.println("fanhuizhi**********###"+returnedData);
-                tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
-                tvhuoqu.setText(returnedData);
-
-                phonenumber = returnedData;
-                break;
-        }
-    }
-
     public String load() {
         FileInputStream in = null;
         BufferedReader reader = null;
@@ -300,9 +240,59 @@ public class MainActivity extends BasicActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode){
+            case 1:
+                if (resultCode == RESULT_OK){
+                    String returnedData = data.getStringExtra("data_return");
+                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                    tvhuoqu.setText(returnedData);
+                    phonenumber = returnedData;
+                }
+                break;
+            case 2:
+                if(resultCode == RESULT_OK){
+                    String returnedData = data.getStringExtra("data_return");
+                    tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                    tvhuoqu.setText(returnedData);
+                    phonenumber = returnedData;
+                }
+                break;
+            default:
+        }
+        switch (resultCode){
+            case RESULT_OK:
+                String returnedData = data.getStringExtra("data_return");
+                System.out.println("fanhuizhi**********###"+returnedData);
+                tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
+                tvhuoqu.setText(returnedData);
+                phonenumber = returnedData;
+                break;
+        }
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar,menu);
         return true;
+    }
+    @Override
+    public void onBackPressed() {
+        if(!mBackKeyPressed){
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            mBackKeyPressed = true;
+            new Timer().schedule(new TimerTask() {//延时两秒，如果超出则擦错第一次按键记录
+                @Override
+                public void run() {
+                    mBackKeyPressed = false;
+                }
+            }, 2000);
+        }
+        else{//退出程序
+            this.finish();
+            System.exit(0);
+        }
     }
 
     @Override

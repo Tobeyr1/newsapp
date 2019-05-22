@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.UserMode.LoginActivity;
 import com.newsapp.android.exitsettings.BasicActivity;
+import com.newsapp.android.gson.NewsBean;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -25,34 +26,26 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class WebActivity extends BasicActivity {
     String user_phone;
     String user_phonenumber;
+    private List<NewsBean.ResultBean.DataBean> list;
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         user_phonenumber = getIntent().getStringExtra("usernumbbbb");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
-        WebView webView = (WebView) findViewById(R.id.webView);
-        findViewById(R.id.toolbar_webcomment).bringToFront();
-        //获取传递的路径
-        String url = getIntent().getStringExtra("url");
-        String inputText = load();
-        if (!TextUtils.isEmpty(inputText)){
-            user_phone = inputText;
-        }
-        //加载路径
-        webView.loadUrl(url);
-        //显示JavaScript页面
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setJavaScriptCanOpenWindowsAutomatically(true);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_webview);
         Toolbar ltoolBar = (Toolbar) findViewById(R.id.toolbar_webcomment);
         findViewById(R.id.toolbar_webcomment).bringToFront();
         setSupportActionBar(ltoolBar);
+        String inputText = load();
+        if (!TextUtils.isEmpty(inputText)){
+            user_phone = inputText;
+        }
         toolbar.setLogo(R.mipmap.ic_launcher_foreground);
         toolbar.setTitle("淮工新闻");
         setSupportActionBar(toolbar);
@@ -107,6 +100,15 @@ public class WebActivity extends BasicActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_chevron_left);
         }
+        //获取传递的路径
+        WebView webView = (WebView) findViewById(R.id.webView);
+        String url = getIntent().getStringExtra("url");
+        //加载路径
+        webView.loadUrl(url);
+        //显示JavaScript页面
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
     }
 
     @Override
@@ -147,14 +149,10 @@ public class WebActivity extends BasicActivity {
                 if (resultCode == RESULT_OK){
                     String returnedData = data.getStringExtra("data_return");
                     user_phonenumber =returnedData;
-                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-                    System.out.println("zhucefanhuizhi@@@@@@@@#####"+user_phonenumber);
                     if (returnedData != null){
-
                     }else {
                         Toast.makeText(this,"登陆失败",Toast.LENGTH_SHORT).show();
                     }
-
                 }
                 break;
             default:
