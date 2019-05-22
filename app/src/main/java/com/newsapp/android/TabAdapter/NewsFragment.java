@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -35,7 +36,9 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NewsFragment extends Fragment {
@@ -43,8 +46,24 @@ public class NewsFragment extends Fragment {
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fab;
-    private static final int UPNEWS_INSERT = 0;
     String usernumbbbb;
+    private static final int UPNEWS_INSERT = 0;
+    private static int zhizhen =0;
+    @SuppressLint("HandlerLeak")
+    private Handler newsHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            String uniquekey,title,date, category,author_name,url,thumbnail_pic_s,thumbnail_pic_s02,thumbnail_pic_s03;
+            switch (msg.what){
+                case UPNEWS_INSERT:
+                    list = ((NewsBean) msg.obj).getResult().getData();
+                    MyTabAdapter adapter = new MyTabAdapter(getActivity(),list);
+                    listView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -150,6 +169,9 @@ public class NewsFragment extends Fragment {
            protected String doInBackground(Void... params) {
                String path = "http://v.juhe.cn/toutiao/index?type="+data+"&key=547ee75ef186fc55a8f015e38dcfdb9a";
                URL url = null;
+               if (zhizhen == 90&& zhizhen <= 180){
+                   path="http://v.juhe.cn/toutiao/index?type="+data+"&key=9eacc1a90ba2f55c116bfd7a16e26bc3";
+               }
                try {
                    url = new URL(path);
                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -159,6 +181,7 @@ public class NewsFragment extends Fragment {
 
                    int responseCode = connection.getResponseCode();
                    if (responseCode == 200){
+                       zhizhen++;
                        InputStream inputStream = connection.getInputStream();
                        String json = streamToString(inputStream,"utf-8");
                        return json;
@@ -176,11 +199,53 @@ public class NewsFragment extends Fragment {
                }
                return "";
            }
-           protected void onPostExecute(String result){
-               NewsBean newsBean = new Gson().fromJson(result,NewsBean.class);
-               list = newsBean.getResult().getData();
-               MyTabAdapter adapter = new MyTabAdapter(getActivity(),list);
-               listView.setAdapter(adapter);
+           protected void onPostExecute(final String result){
+               new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                       NewsBean newsBean = new Gson().fromJson(result,NewsBean.class);
+                       System.out.println("6666666666");
+                       System.out.println(newsBean.getError_code());
+                       if ("10012".equals(""+newsBean.getError_code())){
+                           System.out.println("77777777");
+                           List<NewsBean.ResultBean.DataBean> listDataBean = new ArrayList<>();
+                           Connection conn = null;
+                           conn = (Connection) DBOpenHelper.getConn();
+                           String sql = "select * from news_info ";
+                           PreparedStatement pstmt;
+                           try {
+                               pstmt = (PreparedStatement) conn.prepareStatement(sql);
+                               ResultSet rs = pstmt.executeQuery();
+                               while (rs.next()){
+                                   NewsBean.ResultBean.DataBean dataBean = new NewsBean.ResultBean.DataBean();
+                                   dataBean.setUniquekey(rs.getString(1));
+                                   dataBean.setTitle(rs.getString(2));
+                                   dataBean.setDate(rs.getString(3));
+                                   dataBean.setCategory(rs.getString(4));
+                                   dataBean.setAuthor_name(rs.getString(5));
+                                   dataBean.setUrl(rs.getString(6));
+                                   dataBean.setThumbnail_pic_s(rs.getString(7));
+                                   dataBean.setThumbnail_pic_s02(rs.getString(8));
+                                   dataBean.setThumbnail_pic_s03(rs.getString(9));
+                                   listDataBean.add(dataBean);
+
+
+                               }
+                               newsBean.setResult(new NewsBean.ResultBean());
+                               newsBean.getResult().setData(listDataBean);
+                               pstmt.close();
+                               conn.close();
+                               System.out.println(newsBean.getResult().getData());
+                           } catch (SQLException e) {
+                               e.printStackTrace();
+                           }
+                       }
+                       Message msg=newsHandler.obtainMessage();
+                       msg.what=UPNEWS_INSERT;
+                       msg.obj = newsBean;
+                       newsHandler.sendMessage(msg);
+                   }
+               }).start();
            }
        };
           task.execute();

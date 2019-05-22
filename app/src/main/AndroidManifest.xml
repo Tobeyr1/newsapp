@@ -33,11 +33,6 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon,android:theme">
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.mob.tools.MobUIShell"
@@ -66,7 +61,14 @@
         <activity android:name=".WebActivity" />
         <activity android:name=".UserMode.LoginActivity" />
         <activity android:name=".UserMode.LoginOutActivity" />
-        <activity android:name=".UserMode.UserFavoriteActivity"></activity>
+        <activity android:name=".UserMode.UserFavoriteActivity" />
+        <activity android:name=".util.SplashActivity"
+            android:theme="@style/FixSystemWindowTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
