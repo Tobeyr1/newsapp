@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.support.v7.widget.Toolbar;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.newsapp.android.TabAdapter.NewsFragment;
 import com.newsapp.android.TitleUtils.ChannelItem;
+import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.UserMode.LoginActivity;
 import com.newsapp.android.UserMode.LoginOutActivity;
 import com.newsapp.android.UserMode.UserFavoriteActivity;
@@ -48,6 +50,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -304,8 +309,42 @@ public class MainActivity extends BasicActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.userFeedback:
-
-                Toast.makeText(this,"ni click 用户设置",Toast.LENGTH_SHORT).show();
+                final EditText ed =new EditText(MainActivity.this);
+                AlertDialog.Builder uDialog = new AlertDialog.Builder(MainActivity.this);
+               uDialog.setTitle("用户反馈");
+                uDialog.setView(ed);
+                uDialog.setCancelable(false);
+                uDialog.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String input_text = ed.getText().toString();
+                                Connection conn = null;
+                                conn = (Connection) DBOpenHelper.getConn();
+                                String sql = "insert into user_feedback(user_feed) values(?)";
+                                int i = 0;
+                                PreparedStatement pstmt;
+                                try {
+                                    pstmt = (PreparedStatement) conn.prepareStatement(sql);
+                                    pstmt.setString(1,input_text);
+                                    i = pstmt.executeUpdate();
+                                    pstmt.close();
+                                    conn.close();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    }
+                });
+                uDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                uDialog.show();
                 break;
             case R.id.userExit:
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
