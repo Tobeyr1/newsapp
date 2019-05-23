@@ -48,7 +48,9 @@ public class NewsFragment extends Fragment {
     private FloatingActionButton fab;
     String usernumbbbb;
     private static final int UPNEWS_INSERT = 0;
-    private static int zhizhen =0;
+    private static final int SELECT_REFLSH = 1;
+    private  int zhizhen =0;
+    private int page =0,row =8;
     @SuppressLint("HandlerLeak")
     private Handler newsHandler = new Handler(){
         @Override
@@ -60,6 +62,12 @@ public class NewsFragment extends Fragment {
                     MyTabAdapter adapter = new MyTabAdapter(getActivity(),list);
                     listView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
+                    break;
+                case  SELECT_REFLSH:
+                    list = ((NewsBean) msg.obj).getResult().getData();
+                    MyTabAdapter Madapter = new MyTabAdapter(getActivity(),list);
+                    listView.setAdapter(Madapter);
+                    Madapter.notifyDataSetChanged();
                     break;
             }
         }
@@ -95,12 +103,53 @@ public class NewsFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-               new Handler().postDelayed(new Runnable() {
-                   @Override
-                   public void run() {
-                       swipeRefreshLayout.setRefreshing(false);
-                   }
-               },3000);
+                page++;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                NewsBean newsBean = new NewsBean();
+                                List<NewsBean.ResultBean.DataBean> listDataBean = new ArrayList<>();
+                                Connection conn = null;
+                                conn = (Connection) DBOpenHelper.getConn();
+                                int pages = (page-1)*row;
+                                String sql = "select * from news_info limit "+pages+","+row;
+                                PreparedStatement pstmt;
+                                try {
+                                    pstmt = (PreparedStatement) conn.prepareStatement(sql);
+                                    ResultSet rs = pstmt.executeQuery();
+                                    while (rs.next()){
+                                        NewsBean.ResultBean.DataBean dataBean = new NewsBean.ResultBean.DataBean();
+                                        dataBean.setUniquekey(rs.getString(1));
+                                        dataBean.setTitle(rs.getString(2));
+                                        dataBean.setDate(rs.getString(3));
+                                        dataBean.setCategory(rs.getString(4));
+                                        dataBean.setAuthor_name(rs.getString(5));
+                                        dataBean.setUrl(rs.getString(6));
+                                        dataBean.setThumbnail_pic_s(rs.getString(7));
+                                        dataBean.setThumbnail_pic_s02(rs.getString(8));
+                                        dataBean.setThumbnail_pic_s03(rs.getString(9));
+                                        listDataBean.add(dataBean);
+                                    }
+                                    newsBean.setResult(new NewsBean.ResultBean());
+                                    newsBean.getResult().setData(listDataBean);
+                                    pstmt.close();
+                                    conn.close();
+                                    System.out.println(newsBean.getResult().getData());
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                Message msg=newsHandler.obtainMessage();
+                                msg.what=SELECT_REFLSH;
+                                msg.obj = newsBean;
+                                newsHandler.sendMessage(msg);
+                            }
+                        }).start();
+                    }
+                },1000);
             }
         });
 
@@ -167,10 +216,10 @@ public class NewsFragment extends Fragment {
        @SuppressLint("StaticFieldLeak") AsyncTask<Void,Void,String> task = new AsyncTask<Void, Void, String>() {
            @Override
            protected String doInBackground(Void... params) {
-               String path = "http://v.juhe.cn/toutiao/index?type="+data+"&key=547ee75ef186fc55a8f015e38dcfdb9a";
+               String path = "http://v.juhe.cn/toutiao/index?type="+data+"&key=9eacc1a90ba2f55c116bfd7a16e26bc3";
                URL url = null;
                if (zhizhen == 90&& zhizhen <= 180){
-                   path="http://v.juhe.cn/toutiao/index?type="+data+"&key=9eacc1a90ba2f55c116bfd7a16e26bc3";
+                   path="http://v.juhe.cn/toutiao/index?type="+data+"&key=547ee75ef186fc55a8f015e38dcfdb9a";
                }
                try {
                    url = new URL(path);
