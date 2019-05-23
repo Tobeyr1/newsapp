@@ -111,6 +111,10 @@ public class MainActivity extends BasicActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_24dp);
         }
+        String inputText = load();
+        if (!TextUtils.isEmpty(inputText)){
+           phonenumber =inputText;
+        }
         navView.setCheckedItem(R.id.nav_call);
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -359,9 +363,8 @@ public class MainActivity extends BasicActivity {
                 String inputText = load();
                 if (!TextUtils.isEmpty(inputText)){
                     tvhuoqu = (TextView) findViewById(R.id.text_huoqu);
-                    String  user_phone_number = inputText;
                     phonenumber = inputText;
-                    tvhuoqu.setText(user_phone_number);
+                    tvhuoqu.setText(phonenumber);
                 }
                 break;
             default:

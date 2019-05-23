@@ -35,9 +35,10 @@ public class WebActivity extends BasicActivity {
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        user_phonenumber = getIntent().getStringExtra("usernumbbbb");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
+        user_phonenumber = getIntent().getStringExtra("usernumbbbb");
+        System.out.println("Web初始化是否获取手机号"+user_phonenumber);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_webview);
         Toolbar ltoolBar = (Toolbar) findViewById(R.id.toolbar_webcomment);
         findViewById(R.id.toolbar_webcomment).bringToFront();
@@ -45,6 +46,7 @@ public class WebActivity extends BasicActivity {
         String inputText = load();
         if (!TextUtils.isEmpty(inputText)){
             user_phone = inputText;
+            System.out.println("全局手机号"+user_phone);
         }
         toolbar.setLogo(R.mipmap.ic_launcher_foreground);
         toolbar.setTitle("淮工新闻");
@@ -62,8 +64,8 @@ public class WebActivity extends BasicActivity {
                         startActivity(Intent.createChooser(intent,getTitle()));
                         break;
                     case R.id.news_collect:
+                        System.out.println("Web页面是否获取手机号:"+user_phonenumber);
                         if (user_phonenumber != null){
-                            System.out.println("shifouzhendeshihuoqudaod!@###$#"+user_phonenumber);
                             Toast.makeText(WebActivity.this,"收藏成功",Toast.LENGTH_SHORT).show();
                             new Thread(new Runnable() {
                                 @Override
@@ -162,7 +164,6 @@ public class WebActivity extends BasicActivity {
     public void onBackPressed() {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("data_return",user_phonenumber);
-        System.out.println("*!!!!!!!!!!!");
         System.out.println("*!!!!!!!!!!!"+user_phonenumber);
         setResult(RESULT_OK,returnIntent);
         Bundle bundle = new Bundle();
