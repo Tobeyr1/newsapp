@@ -27,6 +27,7 @@ import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.UserMode.LoginActivity;
 import com.newsapp.android.UserMode.LoginOutActivity;
 import com.newsapp.android.UserMode.UserFavoriteActivity;
+import com.newsapp.android.UserMode.User_DataActivity;
 import com.newsapp.android.exitsettings.ActivityCollector;
 import com.newsapp.android.exitsettings.BasicActivity;
 import com.newsapp.android.gson.Data;
@@ -122,7 +123,8 @@ public class MainActivity extends BasicActivity {
                 mDrawerLayout.closeDrawers();
                 switch (item.getItemId()) {
                     case R.id.nav_call:
-                        Toast.makeText(MainActivity.this, "拍照", Toast.LENGTH_SHORT).show();
+                        Intent unIntent = new Intent(MainActivity.this,User_DataActivity.class);
+                        startActivity(unIntent);
                         break;
                     case R.id.nav_friends:
                         Toast.makeText(MainActivity.this, "gallery", Toast.LENGTH_SHORT).show();

@@ -32,8 +32,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon,android:theme">
-        <activity android:name=".MainActivity">
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity
             android:name="com.mob.tools.MobUIShell"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -62,13 +61,16 @@
         <activity android:name=".UserMode.LoginActivity" />
         <activity android:name=".UserMode.LoginOutActivity" />
         <activity android:name=".UserMode.UserFavoriteActivity" />
-        <activity android:name=".util.SplashActivity"
+        <activity
+            android:name=".util.SplashActivity"
             android:theme="@style/FixSystemWindowTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".UserMode.User_DataActivity"></activity>
     </application>
 
 </manifest>
