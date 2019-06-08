@@ -1,6 +1,8 @@
 package com.newsapp.android;
 
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,10 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.newsapp.android.UserMode.DBOpenHelper;
 import com.newsapp.android.UserMode.LoginActivity;
+import com.newsapp.android.UserMode.UserFavoriteActivity;
 import com.newsapp.android.exitsettings.BasicActivity;
 import com.newsapp.android.gson.NewsBean;
 
@@ -175,6 +179,21 @@ public class WebActivity extends BasicActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_webview,menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.news_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(WebActivity.this,query,Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
@@ -191,9 +210,6 @@ public class WebActivity extends BasicActivity {
                 Bundle bundle = new Bundle();
                 returnIntent.putExtras(bundle);
                 WebActivity.this.finish();
-                break;
-            case R.id.news_search:
-                Toast.makeText(this,"搜索新闻",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.news_setting:
                 Toast.makeText(this,"夜间模式",Toast.LENGTH_SHORT).show();

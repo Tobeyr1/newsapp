@@ -2,6 +2,7 @@ package com.newsapp.android.TabAdapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -48,7 +49,7 @@ public class MyTabAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+       return 3;
     }
 
     @Override

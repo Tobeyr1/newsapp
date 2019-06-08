@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.mob.MobSDK;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.litepal.LitePal;
 

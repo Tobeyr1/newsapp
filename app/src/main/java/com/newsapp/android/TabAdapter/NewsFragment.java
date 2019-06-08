@@ -76,6 +76,8 @@ public class NewsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        page++;
+        System.out.println("执行次数"+page);
         View view = inflater.inflate(R.layout.list_item,container,false);
         listView = (ListView) view.findViewById(R.id.listView);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
@@ -162,7 +164,6 @@ public class NewsFragment extends Fragment {
                 String url = list.get(position).getUrl();
                 String uniquekey = list.get(position).getUniquekey();
                 final   NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) list.get(position);
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -216,11 +217,9 @@ public class NewsFragment extends Fragment {
        @SuppressLint("StaticFieldLeak") AsyncTask<Void,Void,String> task = new AsyncTask<Void, Void, String>() {
            @Override
            protected String doInBackground(Void... params) {
-               String path = "http://v.juhe.cn/toutiao/index?type="+data+"&key=9eacc1a90ba2f55c116bfd7a16e26bc3";
+               String path = "http://v.juhe.cn/toutiao/index?type="+data+"&key=547ee75ef186fc55a8f015e38dcfdb9a";
                URL url = null;
-               if (zhizhen == 90&& zhizhen <= 180){
-                   path="http://v.juhe.cn/toutiao/index?type="+data+"&key=547ee75ef186fc55a8f015e38dcfdb9a";
-               }
+
                try {
                    url = new URL(path);
                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
